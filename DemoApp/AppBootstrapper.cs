@@ -22,18 +22,30 @@ namespace DemoApp
         {
             var loader = _container.Resolve<AppModuleLoader>();
 
-            var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var pattern = "*.dll";
+            var moduleDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var pattern = "*.deps.json";
 
-            Directory
-                .GetFiles(exeDir, pattern)
-                .Select(Assembly.LoadFrom)
-                .Select(loader.LoadModule)
-                .Where(module => module != null)
-                .ToList()
-                .ForEach(module => module.Init());
-            //foreach (IModule module in modules)
-            //module.Init();
+            var assemblyLoadContext = new PluginAssemblyLoadContext(moduleDir);
+
+            //We only want dlls that have a .deps.json file
+            var deps = Directory
+                .GetFiles(moduleDir, pattern);
+
+            //Exclude the current assembly
+            var files = deps
+                .Select(x => Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(x)) + ".dll")
+                .Where(x => x != Path.GetFileName(Assembly.GetExecutingAssembly().Location));
+
+            var assemblies = files
+                .Select(x => Path.Combine(moduleDir, x))
+                .Select(assemblyLoadContext.LoadFromAssemblyPath);
+
+            foreach(var assembly in assemblies)
+            {
+                var module = loader.LoadModule(assembly);
+
+                module?.Init();
+            }
 
             DisplayRootViewFor<ShellViewModel>();
         }
