@@ -37,7 +37,7 @@ namespace DemoApp
             catch
             {
                 //TODO: good exception handling 
-                return null;
+                throw;
             }
         }
     }

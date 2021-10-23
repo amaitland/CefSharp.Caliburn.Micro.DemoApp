@@ -23,28 +23,32 @@ namespace DemoApp
             var loader = _container.Resolve<AppModuleLoader>();
 
             var moduleDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var pattern = "*.deps.json";
+            var pluginsFolder = Directory.GetDirectories(Path.Combine(moduleDir, "plugins"));
 
-            var assemblyLoadContext = new PluginAssemblyLoadContext(moduleDir);
-
-            //We only want dlls that have a .deps.json file
-            var deps = Directory
-                .GetFiles(moduleDir, pattern);
-
-            //Exclude the current assembly
-            var files = deps
-                .Select(x => Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(x)) + ".dll")
-                .Where(x => x != Path.GetFileName(Assembly.GetExecutingAssembly().Location));
-
-            var assemblies = files
-                .Select(x => Path.Combine(moduleDir, x))
-                .Select(assemblyLoadContext.LoadFromAssemblyPath);
-
-            foreach(var assembly in assemblies)
+            foreach (var pluginFolder in pluginsFolder)
             {
-                var module = loader.LoadModule(assembly);
+                const string depsJsonExtensionPattern = "*.deps.json";
 
-                module?.Init();
+                //We only want dlls that have a .deps.json file
+                var deps = Directory
+                    .GetFiles(pluginFolder, depsJsonExtensionPattern);
+
+                var files = deps
+                    .Select(x => Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(x)) + ".dll");
+
+                foreach (var file in files)
+                {
+                    var filePath = Path.Combine(pluginFolder, file);
+
+                    var assemblyLoadContext = new PluginAssemblyLoadContext(filePath);
+                    var assemblyName = AssemblyName.GetAssemblyName(filePath);
+
+                    var assembly = assemblyLoadContext.LoadFromAssemblyName(assemblyName);
+
+                    var module = loader.LoadModule(assembly);
+
+                    module?.Init();
+                }
             }
 
             DisplayRootViewFor<ShellViewModel>();

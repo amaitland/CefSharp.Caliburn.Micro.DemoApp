@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
@@ -8,18 +8,30 @@
     https://docs.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support#plugin-with-library-dependencies
     -->
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <OutputPath>..\bin\</OutputPath>
+    <OutputPath>..\bin\plugins\$(MSBuildProjectName)</OutputPath>
     <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <SelfContained>false</SelfContained>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Castle.Windsor" Version="5.1.1" />
     <PackageReference Include="CefSharp.Wpf.NETCore" Version="94.4.50" />
+    <!--
+    We need to use the instance of Castle.Windsor provided by our host application 
+    so we exclude runtime assets
+    -->
+    <PackageReference Include="Castle.Windsor" Version="5.1.1">
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
+    <!-- 
+    The <Private>false</Private> element is important.
+    This tells MSBuild to not copy Contracts.dll to the output directory for this plugin.
+    If the Contracts.dll assembly is present in the output directory,
+    PluginLoadContext will find the assembly there and load it when it loads the Contracts.dll assembly.
+    https://docs.microsoft.com/en-us/dotnet/core/tutorials/creating-app-with-plugin-support#simple-plugin-with-no-dependencies
+    -->
     <ProjectReference Include="..\Contracts\Contracts.csproj">
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>

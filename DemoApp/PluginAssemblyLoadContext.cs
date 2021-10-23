@@ -8,12 +8,10 @@ namespace DemoApp
     public class PluginAssemblyLoadContext : AssemblyLoadContext
     {
         private AssemblyDependencyResolver _resolver;
-        private string _pluginPath;
 
-        public PluginAssemblyLoadContext(string pluginPath)
+        public PluginAssemblyLoadContext(string componentAssemblyPath)
         {
-            _pluginPath = pluginPath;
-            _resolver = new AssemblyDependencyResolver(pluginPath);
+            _resolver = new AssemblyDependencyResolver(componentAssemblyPath);
         }
 
         protected override Assembly Load(AssemblyName assemblyName)
@@ -21,15 +19,7 @@ namespace DemoApp
             string assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
             if (assemblyPath == null)
             {
-                if(assemblyName.Name.StartsWith("CefSharp"))
-                {
-                    assemblyPath = Path.Combine(_pluginPath, assemblyName.Name + ".dll");
-                }
-
-                if (assemblyPath == null || !File.Exists(assemblyPath))
-                {
-                    return null;
-                }
+                return null;
             }
 
             return LoadFromAssemblyPath(assemblyPath);
