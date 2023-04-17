@@ -18,7 +18,7 @@ namespace DemoApp
             Initialize();
         }
 
-        protected override void OnStartup(object sender, StartupEventArgs e)
+        protected async override void OnStartup(object sender, StartupEventArgs e)
         {
             var loader = _container.Resolve<AppModuleLoader>();
 
@@ -51,7 +51,7 @@ namespace DemoApp
                 }
             }
 
-            DisplayRootViewFor<ShellViewModel>();
+            await DisplayRootViewForAsync<ShellViewModel>();
         }
 
         protected override void Configure()
