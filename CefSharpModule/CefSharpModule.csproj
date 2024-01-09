@@ -14,12 +14,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CefSharp.Wpf.NETCore" Version="112.2.70" />
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="120.1.110" />
     <!--
     We need to use the instance of Castle.Windsor provided by our host application 
     so we exclude runtime assets
     -->
-    <PackageReference Include="Castle.Windsor" Version="5.1.2">
+    <PackageReference Include="Castle.Windsor" Version="6.0.0">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>

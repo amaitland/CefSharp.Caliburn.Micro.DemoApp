@@ -16,7 +16,7 @@
     We need to use the instance of Castle.Windsor provided by our host application 
     so we exclude runtime assets
     -->
-    <PackageReference Include="Castle.Windsor" Version="5.1.2">
+    <PackageReference Include="Castle.Windsor" Version="6.0.0">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
   </ItemGroup>

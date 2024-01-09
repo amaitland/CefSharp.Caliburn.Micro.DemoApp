@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace CefModule.ViewModels
+﻿namespace CefSharpModule.ViewModels
 {
-    public class CefViewModel
+    public class CefSharpViewModel
     {
         public string Address { get; set; } = @"https://www.google.com/";
     }
